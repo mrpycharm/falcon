@@ -73,7 +73,7 @@ class Response:
 
             See :ref:`media` for more information regarding media handling.
 
-        body (str): String representing response content.
+        text (str): String representing response content.
 
             Note:
                 Falcon will encode the given text as UTF-8
@@ -82,11 +82,11 @@ class Response:
 
         data (bytes): Byte string representing response content.
 
-            Use this attribute in lieu of `body` when your content is
+            Use this attribute in lieu of `text` when your content is
             already a byte string (of type ``bytes``). See also the note below.
 
             Warning:
-                Always use the `body` attribute for text, or encode it
+                Always use the `text` attribute for text, or encode it
                 first to ``bytes`` when using the `data` attribute, to
                 ensure Unicode characters are properly encoded in the
                 HTTP response.
@@ -146,7 +146,7 @@ class Response:
     """
 
     __slots__ = (
-        'body',
+        'text',
         'context',
         'options',
         'status',
@@ -182,12 +182,18 @@ class Response:
         # when cookie is set via set_cookie
         self._cookies = None
 
-        self.body = None
+        self.text = None
         self.stream = None
         self._data = None
         self._media = None
 
         self.context = self.context_type()
+
+    @property
+    def body(self):
+        # NOTE(mrpycharm): Keeping it only for
+        # backward-compatibility purposes
+        return self.text
 
     @property
     def data(self):
@@ -835,7 +841,7 @@ class Response:
 
         This property can be used for responding to HEAD requests when you
         aren't actually providing the response body, or when streaming the
-        response. If either the `body` property or the `data` property is set
+        response. If either the `text` property or the `data` property is set
         on the response, the framework will force Content-Length to be the
         length of the given body bytes. Therefore, it is only necessary to
         manually set the content length when those properties are not used.
